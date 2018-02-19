@@ -7,9 +7,9 @@ powerful.
 As Mason automatically adds a well-proven packager manager (Linuxbrew/Homebrew),
 it is able to provide you with apt-get like powers without the necessarity of being root.
 
- OS: Linux/MacOS
-Dependencies:  bash
-
+### Dependencies  
+perl
+bash
 
 ## Directory tree
 
