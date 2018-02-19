@@ -10,8 +10,8 @@ it is able to provide you with apt-get like powers without the necessarity of be
 
 ## Dependencies  
 ```
-perl
 bash
+perl
 ```
 
 
