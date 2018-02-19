@@ -35,8 +35,8 @@ source ../bin/mason.bashrc
 mason create $env_name
 mason install $env_name ../gravel/anaconda2.mason
 mason install $env_name ../gravel/tensorflow-0.12-cp27-cuda8.mason
-mason install $env_name ../gravel/cuda-8.0.mason
 mason install $env_name ../gravel/cudnn-5.1.5.mason
+mason install $env_name ../gravel/cuda-8.0.mason
 
 # say a few things
 clear
