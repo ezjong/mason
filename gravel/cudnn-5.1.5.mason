@@ -1,0 +1,23 @@
+# Gravel input
+ENV_NAME=$1
+ENV_DIR=$2
+
+cudnn_lib=$(find /opt -name "libcudnn.so.5.1.5" | tail -n 1)
+if [ "x$cudnn_lib" == "x" ]
+then
+    cudnn_lib=$(find /usr/local/cuda*/ -name "libcudnn.so.5.1.5" | tail -n 1)
+    if [ "x$cudnn_lib" == "x" ]
+    then
+        echo "Could not find cuDNN directory. Abort installation."
+        return 1
+    fi
+fi
+
+echo "Using cuDNN version found at $cudnn_lib."
+
+cudnn_lib_dir=$(dirname $cudnn_lib)
+cudnn_home=$(dirname $cudnn_lib_dir)
+
+mason modify $ENV_NAME export CUDNN_HOME $cudnn_home
+mason modify $ENV_NAME addlib '\$CUDNN_HOME/lib64'
+mason modify $ENV_NAME addsharedlib '\$CUDNN_HOME/lib64'

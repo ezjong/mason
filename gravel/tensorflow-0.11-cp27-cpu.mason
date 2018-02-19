@@ -1,0 +1,38 @@
+# Gravel input
+ENV_NAME=$1
+ENV_DIR=$2
+
+# read out pip executable in given environment
+env_file="$ENV_DIR/env.bashrc"
+get_cmd="bash -c 'source $env_file;"" echo \$(which pip)'"
+pip_binary=`eval $get_cmd`
+
+# check if pip binary is in environment path
+if echo "$pip_binary" | grep -q "$ENV_DIR"
+then
+    :
+    # all good: pip is within environment
+else
+    echo -n "Warning: Executable not in your current environment ($pip_binary). Continue? [y/n]: "
+    read -n 1 choice
+    echo
+    if [ "$choice" != "y" ]
+    then
+        echo "Abort installation."
+        return 1
+    fi
+fi
+
+# get TensorFlow Python package
+platform=$(uname)
+if [[ "$platform" == 'Darwin' ]]; then
+    whl='https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-0.11.0-py2-none-any.whl'
+elif [[ "$platform" == 'Linux' ]]; then
+    whl='https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.11.0-cp27-none-linux_x86_64.whl'
+else
+    echo "Platform $platform not supported!"
+    return 1
+fi
+
+# install
+$pip_binary install --ignore-installed --upgrade $whl
