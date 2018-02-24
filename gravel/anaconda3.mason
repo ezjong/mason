@@ -9,9 +9,9 @@ echo "ENV_DIR: $ENV_DIR"
 # get Anaconda3 install script
 platform=$(uname)
 if [[ "$platform" == 'Darwin' ]]; then
-    url='https://repo.continuum.io/archive/Anaconda3-5.0.1-MacOSX-x86_64.sh'
+    url='https://repo.continuum.io/archive/Anaconda3-5.1.0-MacOSX-x86_64.sh'
 elif [[ "$platform" == 'Linux' ]]; then
-    url='https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh'
+    url='https://repo.continuum.io/archive/Anaconda3-5.1.0-Linux-x86_64.sh'
 else
     echo "Platform $platform not supported!"
     return 1
