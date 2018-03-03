@@ -183,13 +183,12 @@ function mason_edit()
         echo "Environment \"$env_name\" not found."
         return 1
     fi
-    # do open sublime if it is not in the /usr/bin/subl path
-    # we assume we are remote then..
-    if [[ "$(which subl)" == "/usr/bin/subl"  ]] || [[ "$(which subl)" == ""  ]]; then
-        vi $ENV_FILE
-    else
-        subl --new-window $ENV_FILE
-    fi
+
+    # try sublime first
+    alias subl 2>/dev/null >/dev/null && $(subl --new-window $ENV_FILE) && return 1
+
+    # fallback to vim
+    vi $ENV_FILE
 }
 
 
