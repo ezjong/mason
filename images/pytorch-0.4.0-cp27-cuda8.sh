@@ -23,7 +23,6 @@ fi
 source ../bin/mason.bashrc
 mason create $env_name
 mason install $env_name ../gravel/anaconda2.mason
-mason install $env_name ../gravel/cudnn-6.0.20.mason
 mason install $env_name ../gravel/cuda-8.0.mason
 mason install $env_name ../gravel/pytorch-0.4.0-cuda8.mason
 
