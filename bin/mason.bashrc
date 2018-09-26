@@ -466,11 +466,16 @@ function mason_go()
 function mason_linux_initialize()
 {
     local env_name=$1
-    # download and extract Linuxbrew
-    mkdir linuxbrew
-    wget -qO- https://github.com/Linuxbrew/brew/tarball/master -O master.tar.gz
-    tar xf master.tar.gz -C linuxbrew --strip-components=1
-    rm -rf master.tar.gz
+
+    # Old way of doing this without git: download and extract Linuxbrew
+    # mkdir linuxbrew
+    # wget -qO- https://github.com/Linuxbrew/brew/tarball/master -O master.tar.gz
+    # tar xf master.tar.gz -C linuxbrew --strip-components=1
+    # rm -rf master.tar.gz
+
+    # new way with git
+    git clone https://github.com/Linuxbrew/brew.git $PWD/linuxbrew
+
     # create environment script
     touch env.bashrc
     # and fill with content
@@ -537,11 +542,16 @@ EOF
 function mason_darwin_initialize()
 {
     local env_name=$1
-    # download and extract homebrew
-    mkdir homebrew
-    wget -qO- https://github.com/Homebrew/brew/tarball/master -O master.tar.gz
-    tar xf master.tar.gz -C homebrew --strip-components=1
-    rm -rf master.tar.gz
+
+    # Old way of doing this: download and extract homebrew
+    # mkdir homebrew
+    # wget -qO- https://github.com/Homebrew/brew/tarball/master -O master.tar.gz
+    # tar xf master.tar.gz -C homebrew --strip-components=1
+    # rm -rf master.tar.gz
+
+    # new way with git
+    git clone https://github.com/Homebrew/brew.git $PWD/homebrew
+
     # create environment script
     touch env.bashrc
     # and fill with content
