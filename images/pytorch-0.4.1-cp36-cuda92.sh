@@ -12,7 +12,7 @@ case $platform in
 esac
 
 # read environment name
-default_name="anaconda2"
+default_name="pytorch2"
 echo -n "Choose environment name [default: $default_name]: "
 read env_name
 if [ -z "$env_name" ]
@@ -22,10 +22,9 @@ fi
 
 source ../bin/mason.bashrc
 mason create $env_name
-mason install $env_name ../gravel/anaconda2.mason
-mason install $env_name ../gravel/cuda-8.0.mason
-mason install $env_name ../gravel/cudnn-6.0.20.mason
-mason install $env_name ../gravel/pytorch-0.3.0-cuda8.mason
+mason install $env_name ../gravel/anaconda3.mason
+mason install $env_name ../gravel/cuda-9.2.mason  # this must be before PyTorch
+mason install $env_name ../gravel/pytorch-0.4.1-cuda92.mason
 
 # say a few things
 clear

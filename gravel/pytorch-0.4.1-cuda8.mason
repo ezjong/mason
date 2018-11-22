@@ -25,11 +25,8 @@ fi
 
 platform=$(uname)
 if [[ "$platform" == 'Linux' ]]; then
-    $conda_binary install pytorch=0.4.1 torchvision -c pytorch
+    $conda_binary install pytorch=0.4.1 torchvision cuda80 -c pytorch
 else
     echo "Platform $platform not supported!"
     return 1
 fi
-
-mason modify $ENV_NAME export CUDA_HOME '\$ANACONDA_HOME'
-mason modify $ENV_NAME export CUDA_ROOT '\$ANACONDA_HOME'
