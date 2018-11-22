@@ -31,3 +31,5 @@ else
     return 1
 fi
 
+mason modify $ENV_NAME export CUDA_HOME '\$ANACONDA_HOME'
+mason modify $ENV_NAME export CUDA_ROOT '\$ANACONDA_HOME'
