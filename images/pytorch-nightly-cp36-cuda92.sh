@@ -11,8 +11,8 @@ case $platform in
         ;;
 esac
 
-# read environment name
-default_name="anaconda2"
+# give a environment name
+default_name="pytorch3-nightly"
 echo -n "Choose environment name [default: $default_name]: "
 read env_name
 if [ -z "$env_name" ]; then
@@ -21,7 +21,9 @@ fi
 
 mason create $env_name
 mason install $env_name anaconda3
-mason install $env_name pytorch-0.4.1-cpu
+mason install $env_name cuda-9.2-conda
+mason install $env_name pytorch-nightly-cuda92
+
 
 # say hello
 clear; mason_welcome $env_name

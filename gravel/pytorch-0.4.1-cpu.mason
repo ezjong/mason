@@ -8,16 +8,13 @@ get_cmd="bash -c 'source $env_file;"" echo \$(which conda)'"
 conda_binary=`eval $get_cmd`
 
 # check if conda binary is in environment path
-if echo "$conda_binary" | grep -q "$ENV_DIR"
-then
-    :
-    # all good: conda is within environment
+if echo "$conda_binary" | grep -q "$ENV_DIR"; then
+    :  # all good: conda is within environment
 else
     echo -n "Warning: Executable not in your current environment ($conda_binary). Continue? [y/n]: "
     read -n 1 choice
     echo
-    if [ "$choice" != "y" ]
-    then
+    if [ "$choice" != "y" ]; then
         echo "Abort installation."
         return 1
     fi
@@ -26,9 +23,9 @@ fi
 # get Anaconda2 install script
 platform=$(uname)
 if [[ "$platform" == 'Darwin' ]]; then
-    $conda_binary install pytorch=0.4.1 torchvision -c pytorch
+    $conda_binary install pytorch=0.4.1 torchvision -c pytorch --yes
 elif [[ "$platform" == 'Linux' ]]; then
-    $conda_binary install pytorch-cpu=0.4.1 torchvision-cpu -c pytorch
+    $conda_binary install pytorch-cpu=0.4.1 torchvision-cpu -c pytorch --yes
 else
     echo "Platform $platform not supported!"
     return 1

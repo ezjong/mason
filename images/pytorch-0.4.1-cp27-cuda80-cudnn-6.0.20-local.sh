@@ -15,18 +15,15 @@ esac
 default_name="anaconda2"
 echo -n "Choose environment name [default: $default_name]: "
 read env_name
-if [ -z "$env_name" ]
-then
+if [ -z "$env_name" ]; then
     env_name=$default_name
 fi
 
-source ../bin/mason.bashrc
 mason create $env_name
-mason install $env_name ../gravel/anaconda2.mason
-mason install $env_name ../gravel/cudnn-6.0.20.mason
-mason install $env_name ../gravel/cuda-8.0.mason
-mason install $env_name ../gravel/pytorch-0.4.1-cuda8.mason
+mason install $env_name anaconda2
+mason install $env_name cudnn-6.0.20-local
+mason install $env_name cuda-8.0-local
+mason install $env_name pytorch-0.4.1-cuda80-local
 
-# say a few things
-clear
-mason_welcome $env_name
+# say hello
+clear; mason_welcome $env_name

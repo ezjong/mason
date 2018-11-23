@@ -8,16 +8,13 @@ get_cmd="bash -c 'source $env_file;"" echo \$(which pip)'"
 pip_binary=`eval $get_cmd`
 
 # check if pip binary is in environment path
-if echo "$pip_binary" | grep -q "$ENV_DIR"
-then
-    :
-    # all good: pip is within environment
+if echo "$pip_binary" | grep -q "$ENV_DIR"; then
+    :  # all good: pip is within environment
 else
     echo -n "You're about to install the protobuf native extension via $pip_binary. Continue? [y/n]: "
     read -n 1 choice
     echo
-    if [ "$choice" != "y" ]
-    then
+    if [ "$choice" != "y" ]; then
         echo "Abort installation."
         return 1
     fi

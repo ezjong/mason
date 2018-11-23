@@ -2,13 +2,29 @@
 
 function mason_list()
 {
-    echo  'ENVIRONMENTS:'
-    # list environments
+    # list available environments
+    echo 'ENVIRONMENTS:'
     local i=1
     for d in $ENVIRONMENTS_HOME/*/; do
         d=${d%*/}
         echo "  [$i] ${d##*/}"
         ((i = i + 1))
+    done
+}
+
+
+function mason_gravel()
+{
+    # list available gravel scripts
+    echo 'GRAVEL SCRIPTS:'
+    # find mason gravel folder
+    local gravel_home="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../gravel && pwd )"
+    # just lists the basenames
+    for fullfile in $gravel_home/*mason; do
+        local filename=$(basename -- "$fullfile")
+        local extension="${filename##*.}"
+        local filename="${filename%.*}"
+        echo "  $filename"
     done
 }
 
@@ -53,33 +69,14 @@ function mason_load()
         fi
     fi
 
-    # we used to say hello when loading an environment
-    # obsolete since we introduced a named prompt
-    #else
-    #    echo
-    #    echo "Loading $env_name."
-    #fi
+    # Not quite sure whether the best way is just to source the environment.
+    # In future, we may change the startup such that a complete new shell instance is created..
 
     local env_file=$ENVIRONMENTS_HOME/$env_name/env.bashrc
-
-    # this is still to be discussed: not quite sure whether the best way
-    # is just to source the environment. In future, we may change the startup
-    # such that a complete new shell instance is created..
-
     source $env_file
 
-    # obsolete:
-    # bash --rcfile <(echo ". ~/.bashrc; source $env_file")
-
-    # obsolete since we switched to a named prompt
-    #if [ "$switch" != "" ]; then
-    #    if [ "$switch" == "--quiet" ]; then
-    #        : # allgood
-    #    fi
-    #else
-    #    echo "Done."
-    #fi
 }
+
 
 # rsync is way faster than 'rm -rf'
 function mason_delete_folder()
@@ -94,6 +91,7 @@ function mason_delete_folder()
     rmdir $1
     cd $cwd
 }
+
 
 function mason_remove()
 {
@@ -150,21 +148,53 @@ function mason_install_gravel()
     cd $cwd
 }
 
+
 function mason_install()
 {
-    local first_argument=$(basename "$1")
-    local extension="${first_argument##*.}"
-    if [ "$extension" == "mason" ]; then
+    local environment=""
+    local gravel=""
+    if [ "$#" -ne 1 ]; then
+        # mason install ENVIRONMENT GRAVEL
+        environment="$1"
+        gravel="$2"
+    else
+        # mason install GRAVEL
         if [ "x$CURRENT_ENVIRONMENT" == "x" ]; then
             echo "No environment loaded: Please load/provide environment!"
             return 1
+        else
+            environment=$CURRENT_ENVIRONMENT
+            gravel="$1"
         fi
-        mason_install_gravel $CURRENT_ENVIRONMENT "$1"
-        return 0
-    else
-        mason_install_gravel "$1" "$2"
-        return 0
     fi
+
+    local gravelbase=$(basename "$gravel")
+    local extension="${gravelbase##*.}"
+    if [ "$extension" == "mason" ]; then
+
+        # mason install ..  path/to/gravelscript.mason
+        mason_install_gravel $environment $gravel
+
+    else
+        # mason install .. gravelscript
+
+        local gravel_home="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../gravel && pwd )"
+        local allgood="0"
+        for fullfile in $gravel_home/*mason; do
+            local gravelbase_dst=$(basename -- "$fullfile")
+            local extension="${gravelbase_dst##*.}"
+            local gravelbase_dst="${gravelbase_dst%.*}"
+            if [ "$gravelbase_dst" == "$gravelbase" ]; then
+                mason_install_gravel "$environment" "$fullfile"
+                allgood="1"
+            fi
+        done
+        if [ "$allgood" == "0" ]; then
+            echo "Gravel script for \"$gravel\" not found."
+        fi
+    fi
+
+    return 0
 }
 
 
@@ -246,6 +276,7 @@ MODIFY:
 EOF
 }
 
+
 function mason_replace()
 {
     local env_file=$1
@@ -272,6 +303,7 @@ function mason_append_after()
     local after="$tag\n$content"
     mason_replace $env_file "$before" "$after"
 }
+
 
 function mason_insert_before()
 {
@@ -333,6 +365,7 @@ function mason_addlib()
     local content="export LIBRARY_PATH=\\\$LIBRARY_PATH:$lib_path"
     mason_insert_before $env_file "#/LIB" "$content"
 }
+
 
 function mason_addsharedlib()
 {
@@ -617,6 +650,7 @@ EOF
 
 }
 
+
 function mason_welcome()
 {
     local env_name=$1
@@ -634,6 +668,7 @@ function mason_welcome()
     echo "You are good to go."
     echo
 }
+
 
 function mason_create()
 {
@@ -682,7 +717,8 @@ USAGE:
   mason create ENVIRONMENT                  --create new environment
   mason edit [ENVIRONMENT]                  --open (current) configuration script
   mason go [ENVIRONMENT]                    --cd to (current) environment home
-  mason install [ENVIRONMENT] GRAVEL        --install Mason package
+  mason gravel                              --lists available gravel scripts
+  mason install [ENVIRONMENT] GRAVEL        --install Mason package or gravel script
   mason list                                --list all environments
   mason load ENVIRONMENT                    --load environment by name
   mason modify ENVIRONMENT                  --modify environment
@@ -715,6 +751,9 @@ function mason()
             ;;
         "go")
             mason_go $@
+            ;;
+        "gravel")
+            mason_gravel
             ;;
         "install")
             mason_install $@

@@ -29,7 +29,7 @@ else
 fi
 
 # Installing the toolkit
-$conda_binary install -c hcc cudatoolkit=9.2
+$conda_binary install -c hcc cudatoolkit=9.2 --yes
 
 # setting some environment variables
 mason modify $ENV_NAME export CUDA_HOME '\$ANACONDA_HOME'
