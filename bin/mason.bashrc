@@ -133,7 +133,7 @@ function mason_install_gravel()
     # get gravel folder from gravel script name
     local platform=$(uname)
     if [[ "$platform" == 'Darwin' ]]; then
-        local gravel_home=$(dirname $(realpath $gravel_script))
+        local gravel_home=$(dirname $gravel_script)
     elif [[ "$platform" == 'Linux' ]]; then
         local gravel_home=$(dirname $(readlink -f -- $gravel_script))
     else
