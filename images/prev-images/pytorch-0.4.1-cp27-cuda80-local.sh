@@ -22,7 +22,7 @@ fi
 mason create $env_name
 mason install $env_name anaconda2
 mason install $env_name cudnn-6.0.20-local
-mason install $env_name cuda-8.0-local
+mason install $env_name cudatoolkit-8.0-local
 mason install $env_name pytorch-0.4.1-cuda80-local
 
 # say hello

@@ -2,14 +2,14 @@
 ENV_NAME=$1
 ENV_DIR=$2
 
-# read conda executable in given environment
+# read out pip executable in given environment
 env_file="$ENV_DIR/env.bashrc"
 get_cmd="bash -c 'source $env_file;"" echo \$(which conda)'"
 conda_binary=`eval $get_cmd`
 
 # check if conda binary is in environment path
 if echo "$conda_binary" | grep -q "$ENV_DIR"; then
-    : # allgood: conda is within environment
+    :  # all good: conda is within environment
 else
     echo -n "Warning: Executable not in your current environment ($conda_binary). Continue? [y/n]: "
     read -n 1 choice
@@ -22,15 +22,8 @@ fi
 
 platform=$(uname)
 if [[ "$platform" == 'Linux' ]]; then
-    :  # allgood
+    $conda_binary install pytorch=0.4.1 torchvision cuda90 -c pytorch --yes
 else
     echo "Platform $platform not supported!"
     return 1
 fi
-
-# Installing the toolkit
-$conda_binary install -c anaconda cudatoolkit=9.2 --yes
-
-# setting some environment variables
-mason modify $ENV_NAME export CUDA_HOME '\$ANACONDA_HOME'
-mason modify $ENV_NAME export CUDA_ROOT '\$ANACONDA_HOME'
