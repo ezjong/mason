@@ -1,13 +1,13 @@
-
+__MASON_KEY_MAP=(1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z)
 
 function mason_list()
 {
     # list available environments
     echo 'ENVIRONMENTS:'
-    local i=1
+    local i=0
     for d in $ENVIRONMENTS_HOME/*/; do
         d=${d%*/}
-        echo "  [$i] ${d##*/}"
+        echo "  [${__MASON_KEY_MAP[$i]}] ${d##*/}"
         ((i = i + 1))
     done
 }
@@ -37,10 +37,10 @@ function mason_switch()
     echo -n "Choose environment [#]: "
     read -n 1 choice
     echo
-    local i=1
+    local i=0
     for d in $ENVIRONMENTS_HOME/*/; do
         d=${d%*/}
-        if [ $i -eq $choice ]; then
+        if [ "${__MASON_KEY_MAP[$i]}" = "$choice" ]; then
             mason_load ${d##*/}
             break
         fi
@@ -526,6 +526,7 @@ export MASON_PREV_PS1_PREFIX=\$PS1_PREFIX
 #/UNLOADING_STATE
 
 #BASE
+ALL_ENVS_HOME="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 ENV_HOME="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
 export CURRENT_ENVIRONMENT=\$(basename \$ENV_HOME)
 #/BASE
@@ -602,6 +603,7 @@ export MASON_PREV_PS1_PREFIX=\$PS1_PREFIX
 #/UNLOADING_STATE
 
 #BASE
+ALL_ENVS_HOME="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 ENV_HOME="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
 export CURRENT_ENVIRONMENT=\$(basename \$ENV_HOME)
 #/BASE
