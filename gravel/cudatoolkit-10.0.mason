@@ -6,12 +6,12 @@ echo "GRAVEL: cudatoolkit-10.0"
 echo "ENV_NAME: $ENV_NAME"
 echo "ENV_DIR: $ENV_DIR"
 
-filename=cuda_10.0.130_410.48_linux
+base_installer=https://developer.nvidia.com/compute/cuda/10.0/Prod/local_installers/cuda_10.0.130_410.48_linux
 
 # get install script
 platform=$(uname)
 if [[ "$platform" == 'Linux' ]]; then
-    url="https://developer.nvidia.com/compute/cuda/10.0/Prod/local_installers/$filename"
+    : # allgood
 else
     echo "Platform $platform not supported!"
     return 1
@@ -20,21 +20,14 @@ fi
 # change to environment
 cd $ENV_DIR
 
-# download
-wget $url
-
-# install
+# ------------------------------------
+# install base
+# ------------------------------------
 toolkitpath=$ENV_DIR/cuda-10.0
-"./$filename" \
---no-man-page \
---silent \
---toolkit \
---toolkitpath=$toolkitpath
-
-# --no-opengl-libs   size=
-
-# delete script
-rm -rf $filename
+wget $base_installer
+script="$(basename $base_installer)"
+"./$script" --silent --toolkit --toolkitpath=$toolkitpath
+rm -rf $script
 
 # custom changes to environment
 mason modify $ENV_NAME export CUDA_HOME '\$ENV_HOME/cuda-10.0'
@@ -43,3 +36,6 @@ mason modify $ENV_NAME addsharedlib '\$CUDA_HOME/lib64'
 mason modify $ENV_NAME addlib '\$CUDA_HOME/extras/CUPTI/lib64'
 mason modify $ENV_NAME addsharedlib '\$CUDA_HOME/extras/CUPTI/lib64'
 mason modify $ENV_NAME addpath '\$CUDA_HOME/bin' --front
+
+
+cat $ENV_DIR/cuda-10.0/version.txt

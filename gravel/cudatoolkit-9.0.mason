@@ -2,35 +2,78 @@
 ENV_NAME=$1
 ENV_DIR=$2
 
-# read conda executable in given environment
-env_file="$ENV_DIR/env.bashrc"
-get_cmd="bash -c 'source $env_file;"" echo \$(which conda)'"
-conda_binary=`eval $get_cmd`
+echo "GRAVEL: cudatoolkit-9.0"
+echo "ENV_NAME: $ENV_NAME"
+echo "ENV_DIR: $ENV_DIR"
 
-# check if conda binary is in environment path
-if echo "$conda_binary" | grep -q "$ENV_DIR"; then
-    : # allgood: conda is within environment
-else
-    echo -n "Warning: Executable not in your current environment ($conda_binary). Continue? [y/n]: "
-    read -n 1 choice
-    echo
-    if [ "$choice" != "y" ]; then
-        echo "Abort installation."
-        return 1
-    fi
-fi
+base_installer=https://developer.nvidia.com/compute/cuda/9.0/Prod/local_installers/cuda_9.0.176_384.81_linux-run
+patch1=https://developer.nvidia.com/compute/cuda/9.0/Prod/patches/1/cuda_9.0.176.1_linux-run
+patch2=https://developer.nvidia.com/compute/cuda/9.0/Prod/patches/2/cuda_9.0.176.2_linux-run
+patch3=https://developer.nvidia.com/compute/cuda/9.0/Prod/patches/3/cuda_9.0.176.3_linux-run
+patch4=https://developer.nvidia.com/compute/cuda/9.0/Prod/patches/4/cuda_9.0.176.4_linux-run
 
+# get install script
 platform=$(uname)
 if [[ "$platform" == 'Linux' ]]; then
-    :  # allgood
+    : # allgood
 else
     echo "Platform $platform not supported!"
     return 1
 fi
 
-# Installing the toolkit
-$conda_binary install -c hcc cudatoolkit=9.0 --yes
+# change to environment
+cd $ENV_DIR
 
-# setting some environment variables
-mason modify $ENV_NAME export CUDA_HOME '\$ANACONDA_HOME'
-mason modify $ENV_NAME export CUDA_ROOT '\$ANACONDA_HOME'
+# ------------------------------------
+# install base
+# ------------------------------------
+toolkitpath=$ENV_DIR/cuda-9.0
+wget $base_installer
+script="$(basename $base_installer)"
+"./$script" --silent --toolkit --toolkitpath=$toolkitpath
+rm -rf $script
+
+# ------------------------------------
+# install patch1
+# ------------------------------------
+wget $patch1
+script="$(basename $patch1)"
+"./$script" --silent --accept-eula --installdir=$toolkitpath
+ rm -rf $script
+
+# ------------------------------------
+# install patch2
+# ------------------------------------
+wget $patch2
+script="$(basename $patch2)"
+"./$script" --silent --accept-eula --installdir=$toolkitpath
+rm -rf $script
+
+
+# ------------------------------------
+# install patch3
+# ------------------------------------
+wget $patch3
+script="$(basename $patch3)"
+"./$script" --silent --accept-eula --installdir=$toolkitpath
+rm -rf $script
+
+
+# ------------------------------------
+# install patch4
+# ------------------------------------
+wget $patch4
+script="$(basename $patch4)"
+"./$script" --silent --accept-eula --installdir=$toolkitpath
+rm -rf $script
+
+# custom changes to environment
+mason modify $ENV_NAME export CUDA_HOME '\$ENV_HOME/cuda-9.0'
+mason modify $ENV_NAME export CUDA_ROOT '\$CUDA_HOME'
+mason modify $ENV_NAME addlib '\$CUDA_HOME/lib64'
+mason modify $ENV_NAME addsharedlib '\$CUDA_HOME/lib64'
+mason modify $ENV_NAME addlib '\$CUDA_HOME/extras/CUPTI/lib64'
+mason modify $ENV_NAME addsharedlib '\$CUDA_HOME/extras/CUPTI/lib64'
+mason modify $ENV_NAME addpath '\$CUDA_HOME/bin' --front
+
+cat $ENV_DIR/cuda-9.0/version.txt

@@ -2,12 +2,12 @@
 ENV_NAME=$1
 ENV_DIR=$2
 
-echo "GRAVEL: cudatoolkit-9.2"
+echo "GRAVEL: cudatoolkit-8.0"
 echo "ENV_NAME: $ENV_NAME"
 echo "ENV_DIR: $ENV_DIR"
 
-base_installer=https://developer.nvidia.com/compute/cuda/9.2/Prod2/local_installers/cuda_9.2.148_396.37_linux
-patch1=https://developer.nvidia.com/compute/cuda/9.2/Prod2/patches/1/cuda_9.2.148.1_linux
+base_installer=https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run
+patch1=https://developer.nvidia.com/compute/cuda/8.0/Prod2/patches/2/cuda_8.0.61.2_linux-run
 
 # get install script
 platform=$(uname)
@@ -24,10 +24,10 @@ cd $ENV_DIR
 # ------------------------------------
 # install base
 # ------------------------------------
-toolkitpath=$ENV_DIR/cuda-9.2
+toolkitpath=$ENV_DIR/cuda-8.0
 wget $base_installer
 script="$(basename $base_installer)"
-"./$script" --silent --toolkit --toolkitpath=$toolkitpath
+"./$script" --silent --toolkit --toolkitpath=$toolkitpath --override
 rm -rf $script
 
 # ------------------------------------
@@ -36,11 +36,10 @@ rm -rf $script
 wget $patch1
 script="$(basename $patch1)"
 "./$script" --silent --accept-eula --installdir=$toolkitpath
- rm -rf $script
-
+rm -rf $script
 
 # custom changes to environment
-mason modify $ENV_NAME export CUDA_HOME '\$ENV_HOME/cuda-9.2'
+mason modify $ENV_NAME export CUDA_HOME '\$ENV_HOME/cuda-8.0'
 mason modify $ENV_NAME export CUDA_ROOT '\$CUDA_HOME'
 mason modify $ENV_NAME addlib '\$CUDA_HOME/lib64'
 mason modify $ENV_NAME addsharedlib '\$CUDA_HOME/lib64'
@@ -48,4 +47,4 @@ mason modify $ENV_NAME addlib '\$CUDA_HOME/extras/CUPTI/lib64'
 mason modify $ENV_NAME addsharedlib '\$CUDA_HOME/extras/CUPTI/lib64'
 mason modify $ENV_NAME addpath '\$CUDA_HOME/bin' --front
 
-cat $ENV_DIR/cuda-9.2/version.txt
+cat $ENV_DIR/cuda-8.0/version.txt
