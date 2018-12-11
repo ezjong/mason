@@ -1,3 +1,6 @@
+# -------------------------------------------------------------------------------------
+# NOTE: This is work in progress, so I tend to change a few things every now and then..
+# ----------------------------------------------------------------------------v--------
 __MASON_KEY_MAP=(1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z)
 
 function mason_list()
@@ -78,16 +81,26 @@ function mason_load()
 }
 
 
-# rsync is way faster than 'rm -rf'
 function mason_delete_folder()
 {
     local cwd=$(pwd)
     local target=${1%/}
+    local tmp=
+    local platform=$(uname)
+    if [[ "$platform" == 'Darwin' ]]; then
+        tmp=".fast-delete-$(echo $target | md5 | cut -f1 -d" ")"
+    elif [[ "$platform" == 'Linux' ]]; then
+        tmp=".fast-delete-$(echo $target | md5sum | cut -f1 -d" ")"
+    else
+        echo 'Platform $platform not supported on mason!'
+        return 1
+    fi
     cd $target
     cd ..
-    mkdir -p .FAST_DELETE_EMPTY
-    rsync -a --delete .FAST_DELETE_EMPTY/ $target/
-    rmdir .FAST_DELETE_EMPTY
+    mkdir -p $tmp
+    # NOTE: rsync is way faster than 'rm -rf'
+    rsync -a --delete $tmp/ $target/
+    rmdir $tmp
     rmdir $1
     cd $cwd
 }
@@ -538,6 +551,7 @@ PS1_PREFIX=\$CURRENT_ENVIRONMENT
 #LINUXBREW
 LINUXBREW_HOME="\$ENV_HOME/linuxbrew"
 export PATH="\$LINUXBREW_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export LINUXBREW_PATH="\$PATH"
 export MANPATH="\$LINUXBREW_HOME/share/man"
 export INFOPATH="\$LINUXBREW_HOME/share/info"
 export C_INCLUDE_PATH="\$LINUXBREW_HOME/include"
@@ -559,6 +573,16 @@ export LD_LIBRARY_PATH="\$LINUXBREW_HOME/lib"
 
 #PYTHONPATH
 #/PYTHONPATH
+
+#FUNCTIONS
+function brew()
+{
+    local old_path="\$(echo \$PATH)"
+    export PATH="\$LINUXBREW_PATH"
+    command brew "\$@"
+    export PATH="\$old_path"
+}
+#/FUNCTIONS
 
 #REHASH
 hash -r
@@ -620,6 +644,7 @@ export LD_LIBRARY_PATH="\$HOMEBREW_HOME/lib"
 export LIBRARY_PATH="\$HOMEBREW_HOME/lib"
 export MANPATH="\$HOMEBREW_HOME/share/man"
 export PATH="\$HOMEBREW_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export HOMEBREW_PATH="\$PATH"
 #/HOMEBREW
 
 #EXPORT
@@ -636,6 +661,16 @@ export PATH="\$HOMEBREW_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/b
 
 #PYTHONPATH
 #/PYTHONPATH
+
+#FUNCTIONS
+function brew()
+{
+    local old_path="\$(echo \$PATH)"
+    export PATH="\$HOMEBREW_PATH"
+    command brew "\$@"
+    export PATH="\$old_path"
+}
+#/FUNCTIONS
 
 #REHASH
 hash -r
