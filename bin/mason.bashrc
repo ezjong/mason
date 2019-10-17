@@ -513,14 +513,8 @@ function mason_linux_initialize()
 {
     local env_name=$1
 
-    # Old way of doing this without git: download and extract Linuxbrew
-    # mkdir linuxbrew
-    # wget -qO- https://github.com/Linuxbrew/brew/tarball/master -O master.tar.gz
-    # tar xf master.tar.gz -C linuxbrew --strip-components=1
-    # rm -rf master.tar.gz
-
-    # new way with git
-    git clone https://github.com/Linuxbrew/brew.git $PWD/linuxbrew
+    # get files
+    git clone https://github.com/Homebrew/brew $PWD/linuxbrew
 
     # create environment script
     touch env.bashrc
@@ -601,17 +595,12 @@ function mason_darwin_initialize()
 {
     local env_name=$1
 
-    # Old way of doing this: download and extract homebrew
-    # mkdir homebrew
-    # wget -qO- https://github.com/Homebrew/brew/tarball/master -O master.tar.gz
-    # tar xf master.tar.gz -C homebrew --strip-components=1
-    # rm -rf master.tar.gz
-
-    # new way with git
-    git clone https://github.com/Homebrew/brew.git $PWD/homebrew
+    # get files according to https://docs.brew.sh/Installation
+    mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
 
     # create environment script
     touch env.bashrc
+
     # and fill with content
 cat <<EOF > ./env.bashrc
 #UNLOADING_STATE
@@ -643,7 +632,7 @@ export INFOPATH="\$HOMEBREW_HOME/share/info"
 export LD_LIBRARY_PATH="\$HOMEBREW_HOME/lib"
 export LIBRARY_PATH="\$HOMEBREW_HOME/lib"
 export MANPATH="\$HOMEBREW_HOME/share/man"
-export PATH="\$HOMEBREW_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export PATH="\$HOMEBREW_HOME/opt/gnu-sed/libexec/gnubin:\$HOMEBREW_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 export HOMEBREW_PATH="\$PATH"
 #/HOMEBREW
 
@@ -683,7 +672,7 @@ EOF
     # deactivate analytics
     ./homebrew/bin/brew analytics off
     # install gnu sed for osx
-    ./homebrew/bin/brew install gnu-sed --with-default-names
+    ./homebrew/bin/brew install gnu-sed
 
 }
 

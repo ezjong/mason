@@ -9,7 +9,7 @@ conda_binary=`eval $get_cmd`
 
 # check if conda binary is in environment path
 if echo "$conda_binary" | grep -q "$ENV_DIR"; then
-    :  # allgood: conda is within environment
+    :  # all good: conda is within environment
 else
     echo -n "Warning: Executable not in your current environment ($conda_binary). Continue? [y/n]: "
     read -n 1 choice
@@ -22,7 +22,7 @@ fi
 
 platform=$(uname)
 if [[ "$platform" == 'Linux' ]]; then
-    $conda_binary install -c menpo opencv3 --yes
+    $conda_binary install pytorch=0.3.0 torchvision cuda92 -c pytorch --yes
 else
     echo "Platform $platform not supported!"
     return 1

@@ -22,7 +22,7 @@ fi
 
 platform=$(uname)
 if [[ "$platform" == 'Linux' ]]; then
-    $conda_binary install pytorch=0.4.1 torchvision cuda90 -c pytorch --yes
+    $conda_binary install pytorch=0.4.0 torchvision cuda90 -c pytorch --yes
 else
     echo "Platform $platform not supported!"
     return 1
