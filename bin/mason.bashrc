@@ -290,6 +290,14 @@ EOF
 }
 
 
+function mason_replace_noexpand()
+{
+    local env_file=$1
+    local before=$2
+    local after=$3
+    perl -p -i -e "s'$before'$after'g" $env_file
+}
+
 function mason_replace()
 {
     local env_file=$1
@@ -297,7 +305,6 @@ function mason_replace()
     local after=$3
     perl -p -i -e "s&$before&$after&g" $env_file
 }
-
 
 function mason_match_line()
 {
@@ -325,7 +332,7 @@ function mason_insert_before()
     local content=$3
     local before=$tag
     local after="$content\n$tag"
-    mason_replace $env_file "$before" "$after"
+    mason_replace_noexpand $env_file "$before" "$after"
 }
 
 
@@ -427,6 +434,7 @@ function mason_export()
     local export_name=$2
     local export_value=$3
 
+
     # read out whether variable is already exported
     local curr_line=$(mason_match_line $env_file "export $export_name=")
 
@@ -437,8 +445,8 @@ function mason_export()
     if [ "x$curr_line" != "x" ]; then
         # if it's already there, we replace it!
         local before="$curr_line"
-        local after="export $export_name=$export_value"
-        mason_replace $env_file "$before" "$after"
+        local after="export $export_name=$(echo $export_value)"
+        mason_replace_noexpand $env_file "$before" "$after"
     else
         local content="export $export_name=$export_value"
         mason_insert_before $env_file "#/EXPORT" "$content"

@@ -9,35 +9,36 @@ echo "ENV_DIR: $ENV_DIR"
 # get Anaconda3 install script
 platform=$(uname)
 if [[ "$platform" == 'Darwin' ]]; then
-    url='https://repo.anaconda.com/archive/Anaconda3-2019.03-MacOSX-x86_64.sh'
+    url='https://repo.anaconda.com/archive/Anaconda3-2019.10-MacOSX-x86_64.sh'
 elif [[ "$platform" == 'Linux' ]]; then
-    url='https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh'
+    url='https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh'
 else
     echo "Platform $platform not supported!"
     return 1
 fi
 
+
 # change to environment
 cd $ENV_DIR
 
 # download
-wget $url
+# wget $url
 
 # install
 filename=$(basename "$url")
-bash $filename -b -p "$ENV_DIR/anaconda3"
+# bash $filename -b -p "$ENV_DIR/anaconda3"
 
 # initial update
-$ENV_DIR/anaconda3/bin/conda update --all --yes
+# $ENV_DIR/anaconda3/bin/conda update --all --yes
 
 # delete script
-rm -rf $filename
+# rm -rf $filename
 
 # custom changes
-mason modify $ENV_NAME export ANACONDA_HOME '\$ENV_HOME/anaconda3'
-mason modify $ENV_NAME addpath '\$ANACONDA_HOME/bin' --front
-mason modify $ENV_NAME addlib '\$ANACONDA_HOME/lib'
-mason modify $ENV_NAME addsharedlib '\$ANACONDA_HOME/lib'
+mason modify $ENV_NAME export ANACONDA_HOME '$ENV_HOME/anaconda3'
+# mason modify $ENV_NAME addpath '\$ANACONDA_HOME/bin' --front
+# mason modify $ENV_NAME addlib '\$ANACONDA_HOME/lib'
+# mason modify $ENV_NAME addsharedlib '\$ANACONDA_HOME/lib'
 
 # cleanup: index cache, lock files, tarballs
-$ENV_DIR/anaconda3/bin/conda clean -i -l -t --yes
+# $ENV_DIR/anaconda3/bin/conda clean -i -l -t --yes
